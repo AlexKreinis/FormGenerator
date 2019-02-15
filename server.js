@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
+const path = require('path');
 const Input = require('./routes/api/inputsAPI');
 const inputData = require('./routes/api/inputDataAPI');
 const app = express();
