@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css?family=Oswald|PT+Sans&subset=latin-ext');
+
+.Table-container {
+  font-family: 'PT Sans', sans-serif;
+  font-size: 2rem;
+  min-height: 80vh;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column;
+  table {
+    border: 1px solid #dfe2e5;
+    border-collapse: collapse;
+    padding: 1.5rem;
+    th {
+      padding: 1rem;
+      border: 1px solid #dfe2e5;
+    }
+  }
+  &-Table {
+    align-self: center;
+  }
+
+  a {
+    color: #0366d6;
+    text-decoration: none;
+    &:visited {
+      text-decoration: none;
+      color: #0366d6;
+    }
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  .button {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 1.5rem;
+    border: none;
+    background-color: #dfe2e5;
+    border-radius: 0.5rem;
+  }
+}
+.remove {
+  padding: 1.2rem 1.63rem;
+  border-radius: 200rem;
+  border: none;
+  background-color: #c90300;
+  color: white;
+  font-weight: bolder;
+  box-shadow: 3px 3px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
