@@ -4,7 +4,8 @@ import '../css/Table.scss';
 
 export class Table extends Component {
   state = {
-    forms: []
+    forms: [],
+    loading: true
   };
   componentDidMount() {
     fetch('/api/inputs')
@@ -16,7 +17,10 @@ export class Table extends Component {
           submits: form.submits
         }));
 
-        this.setState(curr => ({ forms: [...curr.forms, ...forms] }));
+        this.setState(curr => ({
+          forms: [...curr.forms, ...forms],
+          loading: false
+        }));
       });
   }
   delete = id => {
@@ -58,6 +62,14 @@ export class Table extends Component {
       }
       return null;
     });
+    const { loading } = this.state;
+    if (loading) {
+      return (
+        <div className="Table-container">
+          <div className="load" />
+        </div>
+      );
+    }
     return (
       <div className="Table-container">
         <div className="Table-container-Title">

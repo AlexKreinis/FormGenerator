@@ -3,7 +3,8 @@ import '../css/SubmissionPage.scss';
 
 export class SubmissionPage extends Component {
   state = {
-    submitData: []
+    submitData: [],
+    loading: true
   };
   componentDidMount() {
     const id = this.props.match.params.id;
@@ -11,7 +12,8 @@ export class SubmissionPage extends Component {
       .then(response => response.json())
       .then(response => {
         this.setState({
-          submitData: response
+          submitData: response,
+          loading: false
         });
       });
   }
@@ -29,7 +31,14 @@ export class SubmissionPage extends Component {
         <th key={index}>{name} </th>
       ));
     }
-
+    const { loading } = this.state;
+    if (loading) {
+      return (
+        <div className="submission-container">
+          <div className="load" />
+        </div>
+      );
+    }
     return (
       <div className="submission-container">
         <div>

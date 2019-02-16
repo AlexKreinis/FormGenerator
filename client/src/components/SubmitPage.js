@@ -8,7 +8,8 @@ export class SubmitPage extends Component {
       names: [],
       values: []
     },
-    formID: ''
+    formID: '',
+    loading: true
   };
   componentDidMount() {
     const id = this.props.match.params.id;
@@ -18,7 +19,8 @@ export class SubmitPage extends Component {
       .then(response => {
         this.setState(curr => ({
           formName: response.formName,
-          inputs: [...curr.inputs, ...response.inputs]
+          inputs: [...curr.inputs, ...response.inputs],
+          loading: false
         }));
       });
   }
@@ -72,6 +74,7 @@ export class SubmitPage extends Component {
       })
       .catch(error => console.error('Error:', error));
   };
+
   render() {
     const form = this.state.inputs.map((input, i) => {
       if (input) {
@@ -94,6 +97,14 @@ export class SubmitPage extends Component {
       }
       return null;
     });
+    const { loading } = this.state;
+    if (loading) {
+      return (
+        <div className="submitPage-container">
+          <div className="load" />
+        </div>
+      );
+    }
     return (
       <div className="submitPage-container">
         <div className="submitPage-container-1">
