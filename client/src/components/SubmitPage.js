@@ -9,20 +9,28 @@ export class SubmitPage extends Component {
       values: []
     },
     formID: '',
-    loading: true
+    loading: true,
+    message: ''
   };
   componentDidMount() {
     const id = this.props.match.params.id;
     this.setState({ formID: id });
     fetch(`/api/inputs/${id}`)
-      .then(response => response.json())
+      .then(res => {
+        if (res.status !== 200) {
+          throw new Error('Something went wrong');
+        } else {
+          return res.json();
+        }
+      })
       .then(response => {
         this.setState(curr => ({
           formName: response.formName,
           inputs: [...curr.inputs, ...response.inputs],
           loading: false
         }));
-      });
+      })
+      .catch(err => this.setState({ message: 'something went wrong' }));
   }
   onChange = e => {
     e.preventDefault();
@@ -123,6 +131,7 @@ export class SubmitPage extends Component {
             </form>
           </div>
         </div>
+        <div>{this.state.message}</div>
         <div>
           <a className="button" href="/" type="button">
             Return

@@ -9,11 +9,22 @@
   justify-content: space-around;
   align-items: center;
   flex-direction: column;
+  &-Title {
+    @media only screen and (max-width: 33.75em) {
+      font-size: 1rem;
+    }
+  }
   table {
+    @media only screen and (max-width: 33.75em) {
+      font-size: 1rem;
+    }
     border: 1px solid #dfe2e5;
     border-collapse: collapse;
     padding: 1.5rem;
     th {
+      @media only screen and (max-width: 33.75em) {
+        padding: none;
+      }
       padding: 1rem;
       border: 1px solid #dfe2e5;
     }

@@ -50,10 +50,15 @@ export class form extends Component {
         'Content-Type': 'application/json'
       }
     })
-      .then(res => res.json())
-      .then(response => this.setState({ message: JSON.stringify(response) }))
-      .then(this.props.history.push('/'))
-      .catch(error => this.setState({ message: error }));
+      .then(res => {
+        if (res.status !== 200) {
+          throw new Error('Something went wrong');
+        } else {
+          return res.json();
+        }
+      })
+      .then(() => this.props.history.push('/'))
+      .catch(response => this.setState({ message: 'Something went wrong' }));
   };
   onSelect = ({ target }) => {
     const value = target.value;
@@ -177,7 +182,9 @@ export class form extends Component {
               </button>
             ) : null}
           </div>
-          {this.state.message}
+          <div style={{ fontSize: '3rem', color: 'red' }}>
+            {this.state.message}
+          </div>
         </div>
         <div>
           <a href="/" type="button">
