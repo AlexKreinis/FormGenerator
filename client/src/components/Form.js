@@ -4,12 +4,13 @@ export class form extends Component {
   state = {
     inputs: [],
     tempInput: {
-      fieldLabel: '',
       inputName: '',
-      inputType: ''
+      inputType: '',
+      fieldLabel: ''
     },
     tempName: '',
     formName: '',
+    fieldLabel: '',
     message: ''
   };
   onChange = e => {
@@ -52,7 +53,7 @@ export class form extends Component {
       .then(res => res.json())
       .then(response => this.setState({ message: JSON.stringify(response) }))
       .then(this.props.history.push('/'))
-      .catch(error => console.error('Error:', error));
+      .catch(error => this.setState({ message: error }));
   };
   onSelect = ({ target }) => {
     const value = target.value;
@@ -143,7 +144,11 @@ export class form extends Component {
 
             <div>
               <label htmlFor="inputType">Input Type</label>
-              <select onChange={this.onSelect} required>
+              <select
+                onChange={this.onSelect}
+                required
+                value={this.state.tempInput.inputType}
+              >
                 <option value="">Please select a type</option>
                 {types.map(type => (
                   <option key={type} value={type}>

@@ -22,7 +22,10 @@ router.post('/', (req, res) => {
   newInput
     .save()
     .then(() => res.json(`The inputs were submitted successfully`))
-    .catch(err => res('new input error:  ', err));
+    .catch(err => {
+      console.log(err);
+      res.status(404).send("The inputs wasn't created");
+    });
 });
 router.delete('/:id', (req, res) => {
   Input.findById(req.params.id)

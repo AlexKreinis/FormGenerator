@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Oswald|PT+Sans&subset=latin-ext');
 
 .Table-container {
+  animation: fadein 0.8s;
   font-family: 'PT Sans', sans-serif;
   font-size: 2rem;
   min-height: 80vh;
@@ -51,4 +52,13 @@
   font-weight: bolder;
   box-shadow: 3px 3px rgba(0, 0, 0, 0.4);
   cursor: pointer;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
