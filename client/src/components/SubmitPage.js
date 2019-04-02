@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import '../css/SubmitPage.scss';
+import { sendToDatabase } from './utilities/Utilities';
+import { fetchFromDatabase } from './utilities/Utilities';
+import Spinner from './Spinner';
+
 export class SubmitPage extends Component {
   state = {
     formName: '',
@@ -12,17 +16,12 @@ export class SubmitPage extends Component {
     loading: true,
     message: ''
   };
+
   componentDidMount() {
     const id = this.props.match.params.id;
+    const fetchInputsbyIdAddress = `/api/inputs/${id}`;
     this.setState({ formID: id });
-    fetch(`/api/inputs/${id}`)
-      .then(res => {
-        if (res.status !== 200) {
-          throw new Error('Something went wrong');
-        } else {
-          return res.json();
-        }
-      })
+    fetchFromDatabase(fetchInputsbyIdAddress)
       .then(response => {
         this.setState(curr => ({
           formName: response.formName,
@@ -32,6 +31,7 @@ export class SubmitPage extends Component {
       })
       .catch(err => this.setState({ message: 'something went wrong' }));
   }
+
   onChange = e => {
     e.preventDefault();
     const { name, value } = e.target;
@@ -53,41 +53,31 @@ export class SubmitPage extends Component {
       }
     }));
   };
+
   onSubmit = e => {
     e.preventDefault();
     const { formName, formID } = this.state;
     const { names, values } = this.state.inputData;
-    fetch('/api/inputData', {
-      method: 'POST',
-      body: JSON.stringify({ formName, formID, names, values }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => res.json())
-      .then(response => console.log('Success:', JSON.stringify(response)))
+    const data = { formName, formID, names, values };
+    const id = this.props.match.params.id;
+    const inc = { true: 1 };
+    const inputDataAddrress = '/api/inputData';
+    const inputDataIncAddress = `/api/inputs/submissionUpdate/${id}`;
+
+    sendToDatabase(inputDataAddrress, data)
       .then(() => {
-        const id = this.props.match.params.id;
-        fetch(`/api/inputs/submissionUpdate/${id}`, {
-          method: 'POST',
-          body: JSON.stringify({ true: 1 }),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-          .then(() => {
-            this.props.history.push('/');
-          })
-          .catch(error => console.log('Error', error));
+        sendToDatabase(inputDataIncAddress, inc).then(() => {
+          this.props.history.push('/');
+        });
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => console.log(error));
   };
 
-  render() {
-    const form = this.state.inputs.map((input, i) => {
+  makeForm = () => {
+    return this.state.inputs.map((input, i) => {
       if (input) {
         return (
-          <div key={i}>
+          <div key={input._id}>
             <div>
               <label htmlFor={input.inputLabel}>{input.inputName}</label>
             </div>
@@ -102,17 +92,17 @@ export class SubmitPage extends Component {
             </div>
           </div>
         );
-      }
-      return null;
+      } else return null;
     });
+  };
+
+  render() {
+    const form = this.makeForm();
     const { loading } = this.state;
     if (loading) {
-      return (
-        <div className="submitPage-container">
-          <div className="load" />
-        </div>
-      );
+      return <Spinner />;
     }
+
     return (
       <div className="submitPage-container">
         <div className="submitPage-container-1">

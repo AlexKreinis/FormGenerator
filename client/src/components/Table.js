@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { fetchFromDatabase } from './utilities/Utilities';
+import { deleteFromDatabase } from './utilities/Utilities';
+import Spinner from './Spinner';
 import '../css/Table.scss';
 
 export class Table extends Component {
@@ -8,29 +11,25 @@ export class Table extends Component {
     loading: true
   };
   componentDidMount() {
-    fetch('/api/inputs')
-      .then(response => response.json())
-      .then(response => {
-        const forms = response.map(form => ({
-          formName: form.formName,
-          _id: form._id,
-          submits: form.submits
-        }));
-
-        this.setState(curr => ({
-          forms: [...curr.forms, ...forms],
-          loading: false
-        }));
-      });
+    const inputFetchAdress = '/api/inputs';
+    fetchFromDatabase(inputFetchAdress).then(response => {
+      const forms = response.map(form => ({
+        formName: form.formName,
+        _id: form._id,
+        submits: form.submits
+      }));
+      this.setState(curr => ({
+        forms: [...curr.forms, ...forms],
+        loading: false
+      }));
+    });
   }
   delete = id => {
-    fetch(`/api/inputs/${id}`, {
-      method: 'delete'
-    })
+    const deleteInputsbyIDAddress = `/api/inputs/${id}`;
+    const deleteInputDatabyIDaddress = `/api/inputData/${id}`;
+    deleteFromDatabase(deleteInputsbyIDAddress)
       .then(() => {
-        fetch(`/api/inputData/${id}`, {
-          method: 'delete'
-        });
+        deleteFromDatabase(deleteInputDatabyIDaddress);
       })
       .then(() => {
         const { forms } = this.state;
@@ -38,11 +37,11 @@ export class Table extends Component {
         this.setState({ forms: [...filteredForms] });
       });
   };
-  render() {
-    const formTable = this.state.forms.map((form, index) => {
+  renderFormTable = () => {
+    return this.state.forms.map((form, index) => {
       if (form) {
         return (
-          <tr key={index}>
+          <tr key={form._id}>
             <th>{index + 1}</th>
             <th>{form.formName}</th>
             <th>{form.submits}</th>
@@ -62,14 +61,19 @@ export class Table extends Component {
       }
       return null;
     });
+  };
+  ifEmptyForms = () => {
+    if (this.state.forms.length === 0) return true;
+    else return false;
+  };
+
+  render() {
+    const formTable = this.renderFormTable();
     const { loading } = this.state;
     if (loading) {
-      return (
-        <div className="Table-container">
-          <div className="load" />
-        </div>
-      );
+      return <Spinner />;
     }
+
     return (
       <div className="Table-container">
         <div className="Table-container-Title">
@@ -78,7 +82,7 @@ export class Table extends Component {
         <div className="Table-container-Table">
           <table>
             <tbody>
-              {this.state.forms.length === 0 ? null : (
+              {this.ifEmptyForms() ? null : (
                 <tr style={{ background: '#E0E0E0' }}>
                   <th>Form ID</th>
                   <th>Form Name</th>

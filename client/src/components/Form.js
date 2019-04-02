@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { sendToDatabase } from './utilities/Utilities';
 import '../css/Form.scss';
 export class form extends Component {
   state = {
@@ -41,24 +42,12 @@ export class form extends Component {
   };
   sendData = e => {
     e.preventDefault();
-    let inputs = this.state.inputs;
-    let formName = this.state.formName;
-    fetch('/api/inputs', {
-      method: 'POST',
-      body: JSON.stringify({ inputs, formName }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => {
-        if (res.status !== 200) {
-          throw new Error('Something went wrong');
-        } else {
-          return res.json();
-        }
-      })
+    const { inputs, formName } = this.state;
+    const postInputsAddress = '/api/inputs';
+    const data = { inputs, formName };
+    sendToDatabase(postInputsAddress, data)
       .then(() => this.props.history.push('/'))
-      .catch(response => this.setState({ message: 'Something went wrong' }));
+      .catch(err => this.setState({ message: 'Something went wrong' }));
   };
   onSelect = ({ target }) => {
     const value = target.value;
@@ -71,8 +60,8 @@ export class form extends Component {
     tempInputs.splice(index, 1);
     this.setState({ inputs: [...tempInputs] });
   };
-  render() {
-    const inputs = this.state.inputs.map((input, i) => (
+  renderInputs = () => {
+    return this.state.inputs.map((input, i) => (
       <div className="output" key={i}>
         <div className="output-box">
           <div className="output-label">
@@ -92,6 +81,14 @@ export class form extends Component {
         </div>
       </div>
     ));
+  };
+  formDataExist = () => {
+    if (this.state.inputs.length !== 0 && this.state.formName !== '')
+      return true;
+    else return false;
+  };
+  render() {
+    const inputs = this.renderInputs();
     const types = ['text', 'color', 'date', 'email', 'tel', 'number'];
 
     return (
@@ -173,7 +170,7 @@ export class form extends Component {
           <h1>{this.state.formName}</h1>
           <div>{inputs}</div>
           <div style={{ marginTop: '2rem' }}>
-            {this.state.inputs.length !== 0 && this.state.formName !== '' ? (
+            {this.formDataExist() ? (
               <button
                 style={{ fontSize: '1.5rem', fontWeight: 'bolder' }}
                 onClick={this.sendData}

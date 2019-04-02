@@ -1,28 +1,30 @@
 const express = require('express');
 const router = express.Router();
-
 const inputData = require('../../models/inputData');
-router.get('/:id', (req, res) => {
-  const { id } = req.params;
-  inputData.find({ formID: id }).then(inputs => res.json(inputs));
-});
-router.post('/', (req, res) => {
-  const newinputData = new inputData({
-    formID: req.body.formID,
-    formName: req.body.formName,
-    names: req.body.names,
-    values: req.body.values
-  });
+const builldInputDataItem = require('./moduleCreator/buildinputDataItem');
 
-  newinputData
-    .save()
-    .then(() => res.json(`The inputs were submitted successfully`))
-    .catch(err => console.log('new input error:  ', err));
-});
-router.delete('/:id', (req, res) => {
-  const { id } = req.params;
-  inputData.deleteMany({ formID: id }, err => {
+router.get('/:id', async ({ params }, res) => {
+  try {
+    let inputs = await inputData.find({ formID: params.id });
+    res.json(inputs);
+  } catch (err) {
     console.log(err);
-  });
+  }
+});
+router.post('/', async ({ body }, res) => {
+  try {
+    const newinputData = builldInputDataItem(body);
+    await newinputData.save();
+    res.json(`The inputs were submitted successfully`);
+  } catch (err) {
+    console.log(error);
+  }
+});
+router.delete('/:id', async ({ params }, res) => {
+  try {
+    await inputData.deleteMany({ formID: params.id });
+  } catch (err) {
+    console.log(err);
+  }
 });
 module.exports = router;
